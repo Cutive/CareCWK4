@@ -366,6 +366,7 @@ public class Tournament implements CARE
     public Champion getChampionForChallenge(int chalNo){
         Challenge xx = getSpecificChallenge(chalNo);
         for(Champion ww: champions){
+
             if(ww.canMeetChallenge(xx.getChallengeType()) || ww.available()){
                 return ww;
             }
