@@ -149,27 +149,27 @@ public class Tournament implements CARE
      * @param nme represents the name of the champion
      * @return as shown above
      **/
-     public int enterChampion(String nme) {
-         Champion champion = getChamp(nme);
+    public int enterChampion(String nme) {
+        Champion champion = getChamp(nme);
 
-         if (champion != null) {
-             int entryFee = champion.getEntryFee();
-             if (isInViziersTeam(champion.getName())) {
-                 return 1;
-             } else if (treasury < entryFee) {
-                 return 2; //Not enough guld
-             } else {
-                 reserves.remove(champion);
-                 champions.add(champion);
-                 treasury -= entryFee;
-                 champion.setChampState(ChampionState.ENTERED);
-                 return 0; //Entered Vizier's team
-             }
-         }
-         else{
-             return -1;
-         }
-     }
+        if (champion != null) {
+            int entryFee = champion.getEntryFee();
+            if (isInViziersTeam(champion.getName())) {
+                return 1;
+            } else if (treasury < entryFee) {
+                return 2; //Not enough guld
+            } else {
+                reserves.remove(champion);
+                champions.add(champion);
+                treasury -= entryFee;
+                champion.setChampState(ChampionState.ENTERED);
+                return 0; //Entered Vizier's team
+            }
+        }
+        else{
+            return -1;
+        }
+    }
         
      /** Returns true if the champion with the name is in
      * the vizier's team, false otherwise.
@@ -312,7 +312,10 @@ public class Tournament implements CARE
         if (chal != null) {
             Champion fighter = getChampionForChallenge(chalNo);
             boolean result = chal.doChallenge(fighter);
-            if (fighter == null) {
+            if (this.isDefeated()) {
+                this.treasury -= chal.getReward();
+                return 3;
+            }else if (fighter == null || fighter.getChampState() != ChampionState.ENTERED) {
                 this.treasury -= chal.getReward();
                 return 2;
             } else if (result) {
@@ -324,7 +327,6 @@ public class Tournament implements CARE
                 return 1;
             }
         }
-        if (this.isDefeated()) return 3;
         return -1;
     }
 
@@ -367,7 +369,9 @@ public class Tournament implements CARE
         Challenge xx = getSpecificChallenge(chalNo);
         for(Champion ww: champions){
 
-            if(ww.canMeetChallenge(xx.getChallengeType()) || ww.available()){
+
+            if(ww.canMeetChallenge(xx.getChallengeType()) && ww.available()){
+
                 return ww;
             }
         }
